@@ -1,22 +1,25 @@
 /* eslint-disable react/prop-types */
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import React from "react";
+import PropTypes from "prop-types";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { View } from "react-native";
 
-export default function Profile({ navigation }) {
+export default function Notification({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.container.header}>Profile</Text>
+      <Text style={styles.container.header}>Notification Screen</Text>
       <TouchableOpacity
         style={styles.button}
         onPress={() => {
-          navigation.navigate("LogOut");
+          navigation.navigate("DetailNotify");
         }}
       >
-        <Text style={styles.button.text}>Log out</Text>
+        <Text style={styles.button.text}>Go to detail</Text>
       </TouchableOpacity>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
