@@ -1,17 +1,18 @@
+import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { NavigationContainer } from "@react-navigation/native";
 import { Component } from "react";
-import { StyleSheet } from "react-native";
-import Help from "./Help";
-import Notification from "./Notification";
-const Drawer = createDrawerNavigator();
+import { StyleSheet, View } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import HomePage from "./HomePage";
+import Help from "./HelpPage/Help";
+import HomePage from "./HomePage/HomePage";
+import Notification from "./NotifyPage/Notification";
 
-export default class Home extends Component {
+const Drawer = createDrawerNavigator();
+
+export default class HomeContainer extends Component {
   render() {
     return (
-      <Drawer.Navigator initialRouteName="Home">
+      <Drawer.Navigator initialRouteName="HomePage">
         <Drawer.Screen
           options={{
             drawerIcon: ({ focused, size }) => (
@@ -22,7 +23,7 @@ export default class Home extends Component {
               />
             ),
           }}
-          name="Home"
+          name="HomePage"
           component={HomePage}
         />
         <Drawer.Screen

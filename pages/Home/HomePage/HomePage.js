@@ -1,22 +1,24 @@
 /* eslint-disable react/prop-types */
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import React from "react";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
-export default function Profile({ navigation }) {
+export default function HomePage({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.container.header}>Profile</Text>
+      <Text style={styles.container.header}>Home Screen</Text>
       <TouchableOpacity
         style={styles.button}
         onPress={() => {
-          navigation.navigate("LogOut");
+          navigation.navigate("DetailHome");
         }}
       >
-        <Text style={styles.button.text}>Log out</Text>
+        <Text style={styles.button.text}>Go to detail</Text>
       </TouchableOpacity>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
