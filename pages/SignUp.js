@@ -1,85 +1,130 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
-import React from "react";
 import { Ionicons } from "@expo/vector-icons";
-
+import { useState, React } from "react";
 import {
   Button,
   FlatList,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 //Sử dụng SQLlite
-import * as SQLite from "expo-sqlite/legacy";
-import { Image } from "react-native";
+import { Alert, Image } from "react-native";
 import { styles } from "./Loggin";
-import { Alert } from "react-native";
-const db = SQLite.openDatabase("Qlbhlt.db");
+import * as SQLite from "expo-sqlite";
+const openDb = async () => {
+  try {
+    const db = await SQLite.openDatabaseAsync("Qlbhlt.db");
+    return db;
+  } catch (error) {
+    console.error("Error while creating table:", error);
+    alert("Tạo Bảng Thất Bại");
+  }
+};
+const Del = async () => {
+  try {
+    const db = await openDb();
+    db.execAsync("DROP TABLE IF EXISTS tbluser");
+    alert("Xóa Bảng Thành Công");
+  } catch (error) {
+    console.error("Error while creating table:", error);
+    alert("Xóa Bảng Thất Bại");
+  } finally {
+    db.closeAsync();
+  }
+};
 export default function SignUp({ navigation }) {
+  const Taobanguser = async () => {
+    try {
+      const db = await openDb();
+
+      // Check if table exists
+      const result = await db.getAllAsync(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='tbluser'"
+      );
+      console.log(result);
+
+      if (result?.length === 0) {
+        // Table doesn't exist, create it
+        await db.runAsync(
+          "CREATE TABLE IF NOT EXISTS tbluser(email VARCHAR(200) PRIMARY KEY NOT NULL, password VARCHAR(200))"
+        );
+        alert("Tạo Bảng Thành Công");
+      } else {
+        alert("Bảng đã có");
+      }
+    } catch (error) {
+      console.error("Error while creating table:", error);
+      alert("Tạo Bảng Thất Bại");
+    }
+  };
+
+  const register = async (email, password) => {
+    if (!email || !password) {
+      Alert.alert("Error", "Vui lòng nhập đầy đủ email và mật khẩu");
+      return;
+    }
+    const db = await openDb();
+    try {
+      await db.withTransactionAsync(async () => {
+        const check = await db.getAllSync(
+          "SELECT * FROM tbluser WHERE email = ?",
+          [email]
+        );
+        if (check?.length > 0) {
+          alert("Email đã tồn tại, vui lòng nhập email khác");
+          return;
+        } else {
+          await db.runAsync(
+            "INSERT INTO tbluser (email,password) VALUES (?,?)",
+            [email, password]
+          );
+        }
+        alert("Đăng ký tài khoản thành công");
+      });
+    } catch (error) {
+      throw Error("Error while inserting data:", error);
+    } finally {
+      db.closeAsync();
+    }
+  };
+  const DocBangNguoiDung = async () => {
+    console.log("DocBangNguoiDung");
+    const db = await openDb(); // Open the database
+
+    try {
+      await db.withTransactionAsync(async () => {
+        const result = await db.getAllAsync("SELECT * FROM tbluser");
+        console.log(result);
+        setgandsnguoidung(result);
+      });
+
+      // Log the fetched user data
+    } catch (error) {
+      console.log("Error fetching data:", error);
+    } finally {
+      db.close(); // Optional: close the database connection
+    }
+  };
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [gandsnguoidung, setgandsnguoidung] = useState([]);
   const resetControl = () => {
     setEmail("");
     setPassword("");
   };
-  // Create a new user
-  const checkAndCreateTable = (sql) => {
-    // Check if table exists
-    sql.executeSql(
-      "SELECT name FROM sqlite_master WHERE type='table' AND name='tbluser'",
-      [],
-      (txn, result) => {
-        console.log("Check table result:", result.rows.length);
-
-        // If table does not exist, create it
-        if (result.rows.length == 0) {
-          sql.executeSql(
-            "CREATE TABLE IF NOT EXISTS tbluser (mand INTEGER PRIMARY KEY AUTOINCREMENT, email VARCHAR(200), password VARCHAR(200))",
-            [],
-            (txn, result) => {
-              console.log("Table 'tbluser' created successfully.");
-            },
-            (txn, error) => {
-              console.error("Error creating table:", error);
-            }
-          );
-        }
-      },
-      (tx, error) => {
-        console.error("Error checking table existence:", error);
-      }
-    );
-  };
-
-  const handleSignup = () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please enter both email and password");
-      return;
-    }
-
-    db.transaction((sql) => {
-      // checkAndCreateTable(sql);
-      sql.executeSql(
-        `INSERT INTO tbluser (email, password) VALUES (?, ?)`,
-        [email, password],
-        (tx, result) => {
-          Alert.alert("Success", "Account created successfully!");
-          // Navigate to the login page after successful signup
-          navigation.navigate("Login");
-        },
-        (tx, error) => {
-          console.error("Error during signup:", error);
-          Alert.alert("Error", "Failed to create account");
-        }
-      );
-    });
-  };
-
   return (
     <View style={styles.container}>
+      <FlatList
+        data={gandsnguoidung}
+        renderItem={({ item }) => (
+          <View>
+            <Text>{item.email}</Text>
+            <Text>{item.password}</Text>
+          </View>
+        )}
+      ></FlatList>
       <Image
         source={{
           uri: "https://cdn-icons-png.flaticon.com/512/6159/6159448.png",
@@ -124,7 +169,7 @@ export default function SignUp({ navigation }) {
       </View>
       <TouchableOpacity
         onPress={() => {
-          handleSignup();
+          register(email, password);
         }}
         style={{
           backgroundColor: "orange",
@@ -145,6 +190,24 @@ export default function SignUp({ navigation }) {
           Sign Up
         </Text>
       </TouchableOpacity>
+      <Button
+        title="Tạo Bảng"
+        onPress={() => {
+          Taobanguser();
+        }}
+      />
+      <Button
+        title="Đọc Bảng"
+        onPress={() => {
+          DocBangNguoiDung();
+        }}
+      />
+      <Button
+        title="Đọc Bảng"
+        onPress={async () => {
+          Del();
+        }}
+      />
     </View>
   );
 }

@@ -14,7 +14,7 @@ import React from "react";
 //Sử dụng SQLlite
 import * as SQLite from "expo-sqlite/legacy";
 import UserContext from "../UserContext";
-const db = SQLite.openDatabase("qlbh.db");
+const db = SQLite.openDatabase({ name: "qlbh.db", location: "default" });
 // eslint-disable-next-line react/prop-types
 
 export default function Loggin({ navigation }) {
