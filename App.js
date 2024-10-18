@@ -14,10 +14,16 @@ import { createStackNavigator } from "@react-navigation/stack";
 import Notification from "./pages/Home/NotifyPage/Notification";
 import DetailHome from "./pages/Home/HomePage/DetailHome";
 import LogOut from "./pages/LogOut";
+import Loggin from "./pages/Loggin";
+import SignUp from "./pages/SignUp";
+import { useState } from "react";
+import { createContext, useContext } from "react";
+import UserContext from "./UserContext";
 
 // const db = await SQLite.openDatabaseAsync("QLbanhoa.db");
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
 const Root = () => {
   return (
     <Tab.Navigator
@@ -56,45 +62,43 @@ const Root = () => {
   );
 };
 export default function App() {
-  const taoBangHoa = () => {};
-  // const taoBangHoa = () => {
-  //   db.transaction((txn) => {
-  //     txn.executeSql(
-  //       'SELECT name FROM sqlite_master WHERE type="table" AND name="tblloaihoa"',
-  //       [],
-  //       function (tx, res) {
-  //         if (res.rows.length == 0) {
-  //           txn.executeSql("DROP TABLE IF EXISTS tblloaihoa", []);
-  //           txn.executeSql(
-  //             "CREATE TABLE IF NOT EXISTS tblloaihoa(maloai INTEGER PRIMARY KEY AUTOINCREMENT, tenloai TEXT);",
-  //             []
-  //           );
-  //           alert("Tao bang loai hoa thanh cong");
-  //         } else {
-  //           alert("Bang loai hoa da ton tai");
-  //         }
-  //       }
-  //     );
-  //   });
-  // };
+  const [nd, gannguoidung] = useState({ tennd: "" });
+  const dangnhap = (nd) => {
+    gannguoidung(nd);
+  };
+  const dangxuat = () => {
+    gannguoidung(null);
+  };
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Root">
-        <Stack.Screen
-          name="Root"
-          component={Root}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen name="Notification" component={Notification} />
-        <Stack.Screen name="Category" component={Category} />
-        <Stack.Screen name="Favorite" component={Favorite} />
-        <Stack.Screen name="Profile" component={Profile} />
-        <Stack.Screen name="Help" component={Help} />
-        <Stack.Screen name="DetailNotify" component={DetailNotification} />
-        <Stack.Screen name="DetailHome" component={DetailHome} />
-        <Stack.Screen name="LogOut" component={LogOut} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <UserContext.Provider value={{ nd, dangnhap, dangxuat }}>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Loggin">
+          <Stack.Screen
+            name="Root"
+            component={Root}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="Notification" component={Notification} />
+          <Stack.Screen name="Category" component={Category} />
+          <Stack.Screen name="Favorite" component={Favorite} />
+          <Stack.Screen name="Profile" component={Profile} />
+          <Stack.Screen name="Help" component={Help} />
+          <Stack.Screen name="DetailNotify" component={DetailNotification} />
+          <Stack.Screen name="DetailHome" component={DetailHome} />
+          <Stack.Screen name="LogOut" component={LogOut} />
+          <Stack.Screen
+            name="Loggin"
+            component={Loggin}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SignUp"
+            component={SignUp}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </UserContext.Provider>
   );
 }
 
