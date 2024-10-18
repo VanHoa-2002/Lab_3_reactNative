@@ -1,8 +1,12 @@
 /* eslint-disable react/prop-types */
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import React from "react";
+import { useContext } from "react";
+import UserContext from "../UserContext";
 
 export default function Profile({ navigation }) {
+  const { nd, dangnhap, dangxuat } = useContext(UserContext);
+
   return (
     <View style={styles.container}>
       <Text style={styles.container.header}>Profile</Text>
@@ -14,6 +18,26 @@ export default function Profile({ navigation }) {
       >
         <Text style={styles.button.text}>Log out</Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          navigation.navigate("SignUp");
+        }}
+      >
+        <Text style={styles.button.text}>SignUp</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          navigation.navigate("Loggin");
+        }}
+      >
+        <Text style={styles.button.text}>Loggin</Text>
+      </TouchableOpacity>
+      <View>
+        <Text>User hiện tại</Text>
+        <Text>{nd.tennd}</Text>
+      </View>
     </View>
   );
 }
